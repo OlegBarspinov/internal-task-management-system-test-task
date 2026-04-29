@@ -43,3 +43,12 @@ backend/.pytest_cache/
 backend/logs/
 /docs/tasks/backend-implementation/
 /.kilo/
+
+# Database files
+*.db
+
+# KiloCode internal files
+.kilocodemodes
+
+# Task specification
+ТЗ.md
