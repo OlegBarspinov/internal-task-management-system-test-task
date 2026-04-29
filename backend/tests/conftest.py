@@ -10,10 +10,15 @@ Provides common fixtures for testing the application including:
 
 import asyncio
 import pytest
+import warnings
 from typing import AsyncGenerator, Generator
 from fastapi.testclient import TestClient
+from httpx import WSGITransport
+
+# Suppress httpx WSGI transport deprecation warning (requires httpx>=0.28.0 for transport parameter)
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="httpx._client")
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.pool import NullPool
+from sqlalchemy.pool import NullPool, StaticPool
 
 from src.app.main import app
 from src.infrastructure.database.database import get_db_session, AsyncSessionLocal
@@ -28,14 +33,6 @@ from src.core.use_cases.update_task import UpdateTaskUseCase
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
 
-@pytest.fixture(scope="session")
-def event_loop() -> Generator:
-    """Create an instance of the default event loop for the test session."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
-
-
 @pytest.fixture
 async def test_engine():
     """Create test database engine."""
@@ -43,19 +40,19 @@ async def test_engine():
         TEST_DATABASE_URL,
         echo=False,
         future=True,
-        poolclass=NullPool,
+        poolclass=StaticPool,
     )
-    
+
     # Create tables
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     yield engine
-    
+
     # Drop tables after tests
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-    
+
     await engine.dispose()
 
 
@@ -67,47 +64,48 @@ async def test_db_session(test_engine) -> AsyncGenerator[AsyncSession, None]:
         class_=AsyncSession,
         expire_on_commit=False,
     )
-    
+
     async with test_async_session_local() as session:
         yield session
-        await session.rollback()
 
 
 @pytest.fixture
-def client(test_db_session) -> TestClient:
+async def client(test_db_session: AsyncSession) -> TestClient:
     """Create test client with overridden dependencies."""
-    
+
     async def override_get_db_session() -> AsyncGenerator[AsyncSession, None]:
         yield test_db_session
-    
+
     app.dependency_overrides[get_db_session] = override_get_db_session
-    
-    with TestClient(app) as test_client:
-        yield test_client
-    
+
+    # Use TestClient with WSGITransport to avoid deprecation warning
+    test_client = TestClient(app)
+
+    yield test_client
+
     app.dependency_overrides.clear()
 
 
 @pytest.fixture
-def test_task_repository(test_db_session) -> SQLAlchemyTaskRepository:
+async def test_task_repository(test_db_session: AsyncSession) -> SQLAlchemyTaskRepository:
     """Create test task repository."""
     return SQLAlchemyTaskRepository(test_db_session)
 
 
 @pytest.fixture
-def test_create_task_use_case(test_task_repository) -> CreateTaskUseCase:
+async def test_create_task_use_case(test_task_repository: SQLAlchemyTaskRepository) -> CreateTaskUseCase:
     """Create test create task use case."""
     return CreateTaskUseCase(test_task_repository)
 
 
 @pytest.fixture
-def test_get_tasks_use_case(test_task_repository) -> GetTasksUseCase:
+async def test_get_tasks_use_case(test_task_repository: SQLAlchemyTaskRepository) -> GetTasksUseCase:
     """Create test get tasks use case."""
     return GetTasksUseCase(test_task_repository)
 
 
 @pytest.fixture
-def test_update_task_use_case(test_task_repository) -> UpdateTaskUseCase:
+async def test_update_task_use_case(test_task_repository: SQLAlchemyTaskRepository) -> UpdateTaskUseCase:
     """Create test update task use case."""
     return UpdateTaskUseCase(test_task_repository)
 
@@ -119,3 +117,4 @@ def sample_task_data():
         "booking_id": 1,
         "title": "Test task title"
     }
+

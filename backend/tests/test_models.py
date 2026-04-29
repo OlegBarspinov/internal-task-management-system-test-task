@@ -5,7 +5,7 @@ Tests the InternalTask model validation and behavior.
 """
 
 import pytest
-from pydantic import ValidationError
+from pydantic import ValidationError # Keep ValidationError for other potential Pydantic errors
 from src.core.domain.models import InternalTask, TaskStatus
 from datetime import datetime
 
@@ -79,21 +79,19 @@ class TestInternalTaskModel:
         )
         assert task.title == "Whitespace Title"
         
-        # Empty title (should raise ValidationError)
-        with pytest.raises(ValidationError) as exc_info:
+        # Empty title (should raise ValueError from custom validator)
+        with pytest.raises(ValueError, match="Title must not be empty"):
             InternalTask(
                 booking_id=1,
                 title=""
             )
-        assert "Title must not be empty" in str(exc_info.value)
         
-        # Whitespace-only title (should raise ValidationError)
-        with pytest.raises(ValidationError) as exc_info:
+        # Whitespace-only title (should raise ValueError from custom validator)
+        with pytest.raises(ValueError, match="Title must not be empty"):
             InternalTask(
                 booking_id=1,
                 title="   "
             )
-        assert "Title must not be empty" in str(exc_info.value)
     
     def test_internal_task_model_booking_id_validation(self):
         """Test booking_id validation."""
@@ -144,7 +142,7 @@ class TestInternalTaskModel:
         )
         
         # Act
-        json_data = task.dict()
+        json_data = task.model_dump() # Changed .dict() to .model_dump()
         
         # Assert
         assert json_data["id"] == 1
