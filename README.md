@@ -26,13 +26,13 @@ The backend is built with **Python + FastAPI**. A virtual environment is assumed
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd <project-directory>
+   git clone https://github.com/OlegBarspinov/internal-task-management-system-test-task
+   cd internal-task-management-system-test-task
    ```
 
-2.  **Create virtual environment** (optional but recommended)
+2.  **Create virtual environment using UV** (optional but recommended)
     ```bash
-    python -m venv venv
+    uv venv
     source venv/bin/activate  # Linux/Mac
     venv\Scripts\activate     # Windows
     ```
