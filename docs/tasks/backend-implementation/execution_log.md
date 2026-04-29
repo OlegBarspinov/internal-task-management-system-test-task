@@ -1,57 +1,60 @@
 # Execution Log — backend-implementation
 
 ## Phase 1: Environment Setup and Basic Structure
-- [ ] Step 1: Create folder structure
+- [x] Step 1: Create folder structure
   - Commit: `implement/backend-implementation: create project structure`
   - Note: Creating backend/ directory structure as per BACKEND_PLAN.md
-- [ ] Step 2: Initialize project with uv
+- [x] Step 2: Initialize project with uv
   - Commit: `implement/backend-implementation: initialize uv project`
   - Note: Create virtual environment and pyproject.toml
-- [ ] Step 3: Install dependencies
+- [x] Step 3: Install dependencies
   - Commit: `implement/backend-implementation: install dependencies`
   - Note: FastAPI, Uvicorn, SQLAlchemy, Alembic, Pytest, Loguru
-- [ ] Step 4: Create .gitignore
+- [x] Step 4: Create .gitignore
   - Commit: `implement/backend-implementation: add gitignore`
   - Note: Basic Python .gitignore file
 
 ## Phase 2: Core Layer (Business Logic)
-- [ ] Step 1: Create domain models (InternalTask)
+- [x] Step 1: Create domain models (InternalTask)
   - Commit: `implement/backend-implementation: add InternalTask domain model`
   - Note: Pydantic model with id, booking_id, title, status, created_at
-- [ ] Step 2: Create repository interface (ITaskRepository)
+- [x] Step 2: Create repository interface (ITaskRepository)
   - Commit: `implement/backend-implementation: add ITaskRepository interface`
   - Note: Abstract class with create, get_by_booking_id, get_by_id, update_status, exists methods
-- [ ] Step 3: Implement create_task use case
+- [x] Step 3: Implement create_task use case
   - Commit: `implement/backend-implementation: implement create task use case`
   - Note: Business logic with duplicate check
-- [ ] Step 4: Implement get_tasks use case
+- [x] Step 4: Implement get_tasks use case
   - Commit: `implement/backend-implementation: implement get tasks use case`
   - Note: Retrieve tasks by booking_id
-- [ ] Step 5: Implement update_task use case
+- [x] Step 5: Implement update_task use case
   - Commit: `implement/backend-implementation: implement update task use case`
   - Note: Update task status with validation
 
 ## Phase 3: Infrastructure Layer (Implementations)
-- [ ] Step 1: Setup database (database.py)
+- [x] Step 1: Setup database (database.py)
   - Commit: `implement/backend-implementation: setup async SQLAlchemy`
   - Note: Engine and sessionmaker for SQLite
-- [ ] Step 2: Create SQLAlchemy models (models.py)
+- [x] Step 2: Create SQLAlchemy models (models.py)
   - Commit: `implement/backend-implementation: add SQLAlchemy models`
   - Note: InternalTaskTable corresponding to domain model
-- [ ] Step 3: Implement SQLAlchemyTaskRepository
+- [x] Step 3: Implement SQLAlchemyTaskRepository
   - Commit: `implement/backend-implementation: implement task repository`
   - Note: Concrete repository implementing ITaskRepository
-- [ ] Step 4: Setup logging (logging.py)
+- [x] Step 4: Setup logging (logging.py)
   - Commit: `implement/backend-implementation: setup loguru logging`
   - Note: Structured logging configuration
 
 ## Phase 4: Application Layer (FastAPI)
-- [ ] Step 1: Create FastAPI application (main.py)
+- [x] Step 1: Create FastAPI application (main.py)
   - Commit: `implement/backend-implementation: create FastAPI app`
   - Note: App setup with routers and dependency injection
-- [ ] Step 2: Create task endpoints (api/tasks.py)
+- [x] Step 2: Create task endpoints (api/tasks.py)
   - Commit: `implement/backend-implementation: add task endpoints`
   - Note: POST, GET, PATCH endpoints with Pydantic validation
+- [x] Step 3: Refactor to use lifespan events and separate basic endpoints
+  - Commit: `implement/backend-implementation: refactor main.py and create basic.py`
+  - Note: Moved root and health endpoints to basic.py, updated main.py to use lifespan events instead of deprecated @app.on_event decorators
 
 ## Phase 5: Testing
 - [ ] Step 1: Setup test fixtures (conftest.py)

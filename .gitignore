@@ -1,1 +1,45 @@
-/.kilocode/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+*.egg-info/
+*.egg
+venv/
+ENV/
+env/
+.venv/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+.env.local
+
+# Project specific
+backend/build/
+backend/.pytest_cache/
+backend/logs/
+/docs/tasks/backend-implementation/
+/.kilo/
