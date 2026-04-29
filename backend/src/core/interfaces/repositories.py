@@ -18,7 +18,7 @@ class ITaskRepository(ABC):
     """
     
     @abstractmethod
-    def create(self, task: InternalTask) -> InternalTask:
+    async def create(self, task: InternalTask) -> InternalTask:
         """
         Create a new task.
         
@@ -35,7 +35,7 @@ class ITaskRepository(ABC):
         pass
     
     @abstractmethod
-    def get_by_booking_id(self, booking_id: int) -> List[InternalTask]:
+    async def get_by_booking_id(self, booking_id: int) -> List[InternalTask]:
         """
         Get all tasks for a specific booking.
         
@@ -48,7 +48,7 @@ class ITaskRepository(ABC):
         pass
     
     @abstractmethod
-    def get_by_id(self, task_id: int) -> Optional[InternalTask]:
+    async def get_by_id(self, task_id: int) -> Optional[InternalTask]:
         """
         Get a task by its ID.
         
@@ -61,7 +61,7 @@ class ITaskRepository(ABC):
         pass
     
     @abstractmethod
-    def update_status(self, task_id: int, status: str) -> InternalTask:
+    async def update_status(self, task_id: int, status: str) -> InternalTask:
         """
         Update the status of a task.
         
@@ -79,7 +79,7 @@ class ITaskRepository(ABC):
         pass
     
     @abstractmethod
-    def exists(self, booking_id: int, title: str) -> bool:
+    async def exists(self, booking_id: int, title: str) -> bool:
         """
         Check if a task with the same booking_id and title already exists.
         
