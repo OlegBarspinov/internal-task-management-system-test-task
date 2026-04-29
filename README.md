@@ -13,15 +13,6 @@ This project implements a mini backend and frontend for an internal task managem
 - [Frontend README](frontend/README.md)
 
 
-## Backend Setup and Run
-
-The backend is built with **Python + FastAPI**. A virtual environment is assumed to be already set up in the repository.
-
-1.  **Navigate to the backend directory:**
-    ```bash
-    cd backend
-    ```
-
 ## Installation
 
 1. **Clone the repository**
@@ -33,17 +24,22 @@ The backend is built with **Python + FastAPI**. A virtual environment is assumed
 2.  **Create virtual environment using UV** (optional but recommended)
     ```bash
     uv venv
-    source venv/bin/activate  # Linux/Mac
-    venv\Scripts\activate     # Windows
+    source .venv/bin/activate  # Linux/Mac
+    .venv\Scripts\activate     # Windows
     ```
 
-3.  **Install dependencies from pyproject.toml using UV:**
+3.  **Navigate to the backend directory:**
+    ```bash
+    cd backend
+    ```
+
+4.  **Install dependencies from pyproject.toml using UV:**
     ```bash
     uv sync
     ```
     This installs all main dependencies (FastAPI, Uvicorn, SQLAlchemy, aiosqlite, loguru) and test dependencies (pytest, pytest-asyncio) from the pyproject.toml file using UV package manager.
 
-4.  **Run the backend server:**
+5.  **Run the backend server (in /backend directory):**
     ```bash
     uvicorn src.app.main:app
     ```
