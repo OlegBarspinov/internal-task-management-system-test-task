@@ -4,8 +4,8 @@ Use case for creating a new task.
 Implements business logic for task creation with duplicate prevention.
 """
 
-from src.core.interfaces.repositories import ITaskRepository
-from src.core.domain.models import InternalTask, TaskStatus
+from ..interfaces.repositories import ITaskRepository
+from ..domain.models import InternalTask, TaskStatus
 
 
 class CreateTaskUseCase:
@@ -28,7 +28,7 @@ class CreateTaskUseCase:
         """
         self.task_repository = task_repository
     
-    def execute(self, booking_id: int, title: str) -> InternalTask:
+    async def execute(self, booking_id: int, title: str) -> InternalTask:
         """
         Create a new task.
         
@@ -51,10 +51,10 @@ class CreateTaskUseCase:
         )
         
         # Check for duplicate task (same booking_id + title)
-        if self.task_repository.exists(booking_id, title.strip()):
+        if await self.task_repository.exists(booking_id, title.strip()):
             raise ValueError(f"Task with title '{title}' already exists for booking {booking_id}")
         
         # Create task via repository
-        created_task = self.task_repository.create(task)
+        created_task = await self.task_repository.create(task)
         
         return created_task

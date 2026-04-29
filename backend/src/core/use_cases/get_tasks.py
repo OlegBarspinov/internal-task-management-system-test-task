@@ -5,8 +5,8 @@ Implements business logic for getting tasks associated with a booking.
 """
 
 from typing import List
-from src.core.interfaces.repositories import ITaskRepository
-from src.core.domain.models import InternalTask
+from ..interfaces.repositories import ITaskRepository
+from ..domain.models import InternalTask
 
 
 class GetTasksUseCase:
@@ -27,7 +27,7 @@ class GetTasksUseCase:
         """
         self.task_repository = task_repository
     
-    def execute(self, booking_id: int) -> List[InternalTask]:
+    async def execute(self, booking_id: int) -> List[InternalTask]:
         """
         Get all tasks for a specific booking.
         
@@ -37,4 +37,4 @@ class GetTasksUseCase:
         Returns:
             List of tasks for the booking (empty list if none found)
         """
-        return self.task_repository.get_by_booking_id(booking_id)
+        return await self.task_repository.get_by_booking_id(booking_id)

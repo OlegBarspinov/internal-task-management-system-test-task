@@ -4,8 +4,8 @@ Use case for updating task status.
 Implements business logic for updating task status with validation.
 """
 
-from src.core.interfaces.repositories import ITaskRepository
-from src.core.domain.models import InternalTask, TaskStatus
+from ..interfaces.repositories import ITaskRepository
+from ..domain.models import InternalTask, TaskStatus
 
 
 class UpdateTaskUseCase:
@@ -27,7 +27,7 @@ class UpdateTaskUseCase:
         """
         self.task_repository = task_repository
     
-    def execute(self, task_id: int, status: str) -> InternalTask:
+    async def execute(self, task_id: int, status: str) -> InternalTask:
         """
         Update the status of a task.
         
@@ -50,11 +50,11 @@ class UpdateTaskUseCase:
             raise ValueError(f"Invalid status '{status}'. Valid statuses: {valid_statuses}")
         
         # Get existing task
-        existing_task = self.task_repository.get_by_id(task_id)
+        existing_task = await self.task_repository.get_by_id(task_id)
         if not existing_task:
             raise ValueError(f"Task with ID {task_id} not found")
         
         # Update task status via repository
-        updated_task = self.task_repository.update_status(task_id, task_status.value)
+        updated_task = await self.task_repository.update_status(task_id, task_status.value)
         
         return updated_task
