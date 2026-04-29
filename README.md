@@ -22,15 +22,20 @@ The backend is built with **Python + FastAPI**. A virtual environment is assumed
     cd backend
     ```
 
-2.  **Activate the virtual environment:**
-    *   On Windows:
-        ```bash
-        .\venv\Scripts\activate
-        ```
-    *   On macOS/Linux:
-        ```bash
-        source venv/bin/activate
-        ```
+## Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd <project-directory>
+   ```
+
+2. **Create virtual environment** (optional but recommended)
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   venv\Scripts\activate     # Windows
+   ```
 
 
 4.  **Run the backend server:**
