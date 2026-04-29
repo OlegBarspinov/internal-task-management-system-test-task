@@ -7,9 +7,9 @@ Concrete implementation of ITaskRepository using SQLAlchemy ORM.
 from typing import List, Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.core.interfaces.repositories import ITaskRepository
-from src.core.domain.models import InternalTask
-from src.infrastructure.database.models import InternalTaskTable
+from ....core.interfaces.repositories import ITaskRepository
+from ....core.domain.models import InternalTask
+from ..models import InternalTaskTable
 
 
 class SQLAlchemyTaskRepository(ITaskRepository):
@@ -51,7 +51,6 @@ class SQLAlchemyTaskRepository(ITaskRepository):
         await self.session.commit()
         await self.session.refresh(db_task)
         
-        # Convert back to domain model
         return InternalTask(
             id=db_task.id,
             booking_id=db_task.booking_id,
@@ -70,13 +69,11 @@ class SQLAlchemyTaskRepository(ITaskRepository):
         Returns:
             List of tasks for the booking
         """
-        # Query tasks by booking_id
         result = await self.session.execute(
             select(InternalTaskTable).where(InternalTaskTable.booking_id == booking_id)
         )
         db_tasks = result.scalars().all()
         
-        # Convert database models to domain models
         return [
             InternalTask(
                 id=db_task.id,
@@ -98,7 +95,6 @@ class SQLAlchemyTaskRepository(ITaskRepository):
         Returns:
             The task if found, None otherwise
         """
-        # Query task by ID
         result = await self.session.execute(
             select(InternalTaskTable).where(InternalTaskTable.id == task_id)
         )
@@ -107,7 +103,6 @@ class SQLAlchemyTaskRepository(ITaskRepository):
         if not db_task:
             return None
             
-        # Convert database model to domain model
         return InternalTask(
             id=db_task.id,
             booking_id=db_task.booking_id,
@@ -127,7 +122,6 @@ class SQLAlchemyTaskRepository(ITaskRepository):
         Returns:
             The updated task
         """
-        # Get existing task
         result = await self.session.execute(
             select(InternalTaskTable).where(InternalTaskTable.id == task_id)
         )
@@ -136,14 +130,11 @@ class SQLAlchemyTaskRepository(ITaskRepository):
         if not db_task:
             raise ValueError(f"Task with ID {task_id} not found")
         
-        # Update status
         db_task.status = status
         
-        # Commit changes
         await self.session.commit()
         await self.session.refresh(db_task)
         
-        # Convert back to domain model
         return InternalTask(
             id=db_task.id,
             booking_id=db_task.booking_id,
@@ -163,7 +154,6 @@ class SQLAlchemyTaskRepository(ITaskRepository):
         Returns:
             True if duplicate exists, False otherwise
         """
-        # Query for existing task with same booking_id and title
         result = await self.session.execute(
             select(InternalTaskTable).where(
                 InternalTaskTable.booking_id == booking_id,

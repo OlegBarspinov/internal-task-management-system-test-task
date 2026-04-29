@@ -7,6 +7,9 @@ Sets up structured logging for the application with appropriate levels and forma
 import sys
 from loguru import logger
 
+# Configure logger
+__all__ = ["logger"]
+
 
 def setup_logging():
     """

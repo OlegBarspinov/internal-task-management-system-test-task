@@ -4,10 +4,10 @@ SQLAlchemy database models.
 Defines the database table structures that correspond to domain entities.
 """
 
-from sqlalchemy import Column, Integer, String, DateTime, Enum as SQLEnum
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, DateTime, Enum as SQLEnum, UniqueConstraint
+from sqlalchemy.orm import declarative_base
 from datetime import datetime
-from src.core.domain.models import TaskStatus
+from ...core.domain.models import TaskStatus
 
 
 # Base class for all database models
@@ -28,6 +28,10 @@ class InternalTaskTable(Base):
     title = Column(String(255), nullable=False)
     status = Column(SQLEnum(TaskStatus), nullable=False, default=TaskStatus.OPEN)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    
+    __table_args__ = (
+        UniqueConstraint('booking_id', 'title', name='uix_booking_title'),
+    )
     
     def __repr__(self):
         return f"<InternalTaskTable(id={self.id}, booking_id={self.booking_id}, title='{self.title}', status='{self.status}')>"
