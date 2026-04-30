@@ -117,19 +117,44 @@ Based on the technical specification, the application implements:
     *   Status change functionality.
     *   API error handling.
 
+### Logging
+
+- **Events to Log:**
+  - `INFO`: Task creation, status changes.
+  - `WARNING`: Validation errors (e.g., duplicate task attempts).
+  - `ERROR`: Unhandled exceptions, database errors.
+  - `CRITICAL`: Application startup failures, critical service unavailability.
+
+
 ## Monitoring & Observability (Planned)
 
-As mentioned in the requirements, the following would be implemented for production:
+### Error Tracking (Sentry)
 
-### Metrics (for Grafana/Prometheus)
-- `internal_task_created_total`: Counter of created tasks
-- `internal_task_active_count`: Gauge of active tasks (OPEN, IN_PROGRESS)
-- `internal_task_status_changed_total`: Counter of status changes
-- `internal_task_create_failed_total`: Counter of failed creation attempts
+- **What to send to Sentry:**
+  - All logs with level `ERROR` and `CRITICAL`. This includes unhandled exceptions, internal server errors, and failed database transactions.
+- **How to connect:**
+  - Integrate the Sentry SDK for Python. A FastAPI middleware would be used to automatically capture and report exceptions to Sentry.
 
-### Alerts
-- Rapid increase in failed task creation (> N errors/10 min)
-- No task creation in 24 hours (potential system issue)
+### Metrics (Prometheus & Grafana)
 
-### Error Tracking
-- Sentry integration for ERROR level logs and above
+- **Key Metrics to Expose:**
+  - `internal_task_active_count`: Gauge of active tasks (status `OPEN` or `IN_PROGRESS`).
+  - `internal_task_created_total`: Counter for every new task created.
+  - `internal_task_status_changed_total`: Counter for task status changes, labeled by the new status.
+  - `internal_task_create_failed_total`: Counter for failed task creation attempts.
+  - `internal_task_creation_time_seconds`: Histogram of the time taken to create a task.
+  - `http_requests_total`: Counter of HTTP requests, labeled by endpoint, method, and status code.
+  - `http_requests_latency_seconds`: Histogram of request latency.
+- **How to connect:**
+  - The FastAPI application would expose a `/metrics` endpoint using a library like `prometheus-fastapi-instrumentator`.
+  - Prometheus would be configured to scrape this endpoint.
+  - Grafana would use Prometheus as a data source to build dashboards.
+
+### Alerting (Alertmanager)
+
+- **Alerts to Configure:**
+  - **High Error Rate:** If `internal_task_create_failed_total` increases by more than N in 10 minutes, notify Tech Ops.
+  - **High Latency:** If the 95th percentile of `internal_task_creation_time_seconds` exceeds X seconds, notify developers.
+  - **API Failures:** If the rate of 5xx errors in `http_requests_total` is above Y for 5 minutes, notify the on-call engineer.
+  - **System Inactivity:** If no new tasks are created in 24 hours, trigger a warning to check if the system is operating correctly.
+
